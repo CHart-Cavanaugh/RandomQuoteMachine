@@ -1,4 +1,4 @@
-$("document").ready(() => {
+$(() => {
 
   const setAttr = (target, attrName, newAttrVal) => {
     $(target).attr(attrName, newAttrVal);
@@ -117,7 +117,7 @@ $("document").ready(() => {
       "Gil-Galad"
     ));
 
-    return [...quotes];
+    return quotes;
 
   };
   const getQuote = (() => {
@@ -147,9 +147,109 @@ $("document").ready(() => {
 
   })();
 
-  const setupAppContainer = () => {
+  const setupApp = () => {
 
+    const setupAppBackground = () => {
+      setProperty("#new-background", "height", "100vh");
+      setProperty("#new-background", "width", "100vw");
+      setProperty("#new-background", "background", newBgColor);
+      setProperty("#new-background", "position", "fixed");
+      setProperty("#new-background", "z-index", "-2");
+
+      setProperty("#current-background", "height", "100vh");
+      setProperty("#current-background", "width", "100vw");
+      setProperty("#current-background", "background", newBgColor);
+      setProperty("#current-background", "position", "fixed");
+      setProperty("#current-background", "z-index", "-1");
+    };
+    const setupAppContainer = () => {
+      setProperty("#app-container", "height", "100vh");
+      setProperty("#app-container", "display", "flex");
+      setProperty("#app-container", "justify-content", "center");
+      setProperty("#app-container", "align-items", "center");
+      setProperty("#app-container", "background", "transparent");
+      setProperty("#app-container", "z-index", "0");
+    };
+    const setupMachine = () => {
+
+      let newBgColor;
+      let newQuote = getQuote();
+      let fadeActive = false;
+      const FADE_SPEED = 1000;
+      const setupQuoteBox = () => {
+        applyClasses("#quote-box", "p-3 rounded");
+        setProperty("#quote-box", "background", "rgba(10, 10, 10, .8)");
+        setProperty("#quote-box", "min-width", "21rem");
+        setProperty("#quote-box", "max-width", "21rem");
+      };
+      const setupQuote = () => {
+        applyClasses("#quote-box > blockquote", "blockquote mb-5");
+        applyClasses("#quote-box > blockquote > footer", "mt-1 blockquote-footer");
+        setProperty("#text", "text-align", "justify");
+        applyClasses("#text", "text-light");
+        $("#text").text(`${newQuote._quote}`);
+        $("#author").text(`${newQuote._author}`);
+      };
+      const setupNewQuoteBtn = () => {
+
+        const handleClick = () => {
+
+          if (!fadeActive) {
+
+            fadeActive = true;
+
+            getPageHue();
+
+            newBgColor = `linear-gradient(
+                               45deg,
+                               hsl(${getPageHue()} 85% 50%),
+                               hsl(${getPageHue()} 85% 50%),
+                               hsl(${getPageHue()} 85% 50%)
+                           )`;
+            newQuote = getQuote();
+
+
+            setProperty("#new-background", "background", newBgColor);
+
+            $("#current-background").fadeOut(FADE_SPEED * 2, () => {
+              setProperty("#current-background", "background", newBgColor);
+              $("#current-background").fadeIn(0);
+            })
+            $("#author").fadeOut(FADE_SPEED);
+            $("#text").fadeOut(FADE_SPEED, () => {
+              $("#text").text(`${newQuote._quote}`);
+              $("#author").text(`${newQuote._author}`);
+              $("#author").fadeIn(FADE_SPEED);
+              $("#text").fadeIn(FADE_SPEED, () => {
+                fadeActive = false;
+              });
+            });
+
+
+
+          }
+
+        };
+
+        applyClasses("#new-quote", "me-5 btn btn-primary");
+        $("#new-quote").on("click", handleClick);
+      };
+      const setupTweetQuoteLink = () => {
+        setProperty('#tweet-quote', "text-decoration-line", "none");
+        applyClasses("#tweet-quote", "ms-5 text-light");
+        applyClasses("#tweet-quote span", "btn btn-primary");
+        applyClasses("#tweet-quote > span > i", "fa fa-twitter fa-lg");
+      }
+
+      setupQuoteBox();
+      setupQuote();
+      setupNewQuoteBtn();
+      setupTweetQuoteLink();
+
+    };
     let newBgColor;
+
+
 
     getPageHue();
 
@@ -158,100 +258,18 @@ $("document").ready(() => {
           hsl(${getPageHue()} 85% 50%),
           hsl(${getPageHue()} 85% 50%),
           hsl(${getPageHue()} 85% 50%)
-        )`
-
-    setProperty("#new-background", "height", "100vh");
-    setProperty("#new-background", "width", "100vw");
-    setProperty("#new-background", "background", newBgColor);
-    setProperty("#new-background", "position", "fixed");
-    setProperty("#new-background", "z-index", "-2");
-
-    setProperty("#current-background", "height", "100vh");
-    setProperty("#current-background", "width", "100vw");
-    setProperty("#current-background", "background", newBgColor);
-    setProperty("#current-background", "position", "fixed");
-    setProperty("#current-background", "z-index", "-1");
-
-    setProperty("#app-container", "height", "100vh");
-    setProperty("#app-container", "display", "flex");
-    setProperty("#app-container", "justify-content", "center");
-    setProperty("#app-container", "align-items", "center");
-    setProperty("#app-container", "background", "transparent");
-    setProperty("#app-container", "z-index", "0");
-  };
-  const setupMachine = () => {
-
-    let newBgColor;
-    let newQuote = getQuote();
-    let fadeActive = false;
-    const FADE_SPEED = 1000;
-    const handleClick = () => {
-
-      if (!fadeActive) {
-
-        fadeActive = true;
-
-        getPageHue();
-
-        newBgColor = `linear-gradient(
-                           45deg,
-                           hsl(${getPageHue()} 85% 50%),
-                           hsl(${getPageHue()} 85% 50%),
-                           hsl(${getPageHue()} 85% 50%)
-                       )`;
-        newQuote = getQuote();
-
-
-        setProperty("#new-background", "background", newBgColor);
-
-        $("#current-background").fadeOut(FADE_SPEED * 2, () => {
-          setProperty("#current-background", "background", newBgColor);
-          $("#current-background").fadeIn(0);
-        })
-        $("#author").fadeOut(FADE_SPEED);
-        $("#text").fadeOut(FADE_SPEED, () => {
-          $("#text").text(`${newQuote._quote}`);
-          $("#author").text(`${newQuote._author}`);
-          $("#author").fadeIn(FADE_SPEED);
-          $("#text").fadeIn(FADE_SPEED, () => {
-            fadeActive = false;
-          });
-        });
+        )`;
 
 
 
-      }
-
-    }
-
-    //INITIALIZE "#quote-box"
-    applyClasses("#quote-box", "p-3 rounded");
-    setProperty("#quote-box", "background", "rgba(10, 10, 10, .8)");
-    setProperty("#quote-box", "min-width", "21rem");
-    setProperty("#quote-box", "max-width", "21rem");
-
-    //INTIALIZE "#quote-box > blockquote"
-    applyClasses("#quote-box > blockquote", "blockquote mb-5");
-    applyClasses("#quote-box > blockquote > footer", "mt-1 blockquote-footer");
-    setProperty("#text", "text-align", "justify");
-    applyClasses("#text", "text-light");
-    $("#text").text(`${newQuote._quote}`);
-    $("#author").text(`${newQuote._author}`);
-
-    //INITIALIZE "#new-quote"
-    applyClasses("#new-quote", "me-5 btn btn-primary");
-    $("#new-quote").click(handleClick);
-
-    //INITIALIZE "#tweet-quote"
-    setProperty('#tweet-quote', "text-decoration-line", "none");
-    applyClasses("#tweet-quote", "ms-5 text-light");
-    applyClasses("#tweet-quote span", "btn btn-primary");
-    applyClasses("#tweet-quote > span > i", "fa fa-twitter fa-lg");
+    setupAppBackground();
+    setupAppContainer();
+    setupMachine();
 
   };
 
 
 
-  setupAppContainer();
-  setupMachine();
+  setupApp();
+
 });
